@@ -16,7 +16,8 @@ window.addEventListener("load", function(evt) {
     document.write("CLOSE");
   };
   ws.onmessage = function(e) {
-    document.write(e.data);
+    var body = document.getElementsByTagName("body")[0];
+    body.innerHTML = e.data;
   };
   ws.onerror = function(e) {
     document.write("Error: ", e.data);
@@ -25,8 +26,12 @@ window.addEventListener("load", function(evt) {
 </script>
 </head>
 <body>
-    <p>Hello, {%s name %}!</p>
+    {%= Body(name) %}
 </body>
 </html>
+{% endfunc %}
+
+{% func Body(name string) %}
+  <p>Hello, {%s name %}!</p>
 {% endfunc %}
 

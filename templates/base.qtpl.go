@@ -39,7 +39,8 @@ window.addEventListener("load", function(evt) {
     document.write("CLOSE");
   };
   ws.onmessage = function(e) {
-    document.write(e.data);
+    var body = document.getElementsByTagName("body")[0];
+    body.innerHTML = e.data;
   };
   ws.onerror = function(e) {
     document.write("Error: ", e.data);
@@ -48,39 +49,78 @@ window.addEventListener("load", function(evt) {
 </script>
 </head>
 <body>
-    <p>Hello, `)
-	//line templates/base.qtpl:28
-	qw422016.E().S(name)
-	//line templates/base.qtpl:28
-	qw422016.N().S(`!</p>
+    `)
+	//line templates/base.qtpl:29
+	StreamBody(qw422016, name)
+	//line templates/base.qtpl:29
+	qw422016.N().S(`
 </body>
 </html>
 `)
-//line templates/base.qtpl:31
+//line templates/base.qtpl:32
 }
 
-//line templates/base.qtpl:31
+//line templates/base.qtpl:32
 func WriteHello(qq422016 qtio422016.Writer, name string) {
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	StreamHello(qw422016, name)
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	qt422016.ReleaseWriter(qw422016)
-//line templates/base.qtpl:31
+//line templates/base.qtpl:32
 }
 
-//line templates/base.qtpl:31
+//line templates/base.qtpl:32
 func Hello(name string) string {
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	WriteHello(qb422016, name)
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	qs422016 := string(qb422016.B)
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:32
 	return qs422016
-//line templates/base.qtpl:31
+//line templates/base.qtpl:32
+}
+
+//line templates/base.qtpl:34
+func StreamBody(qw422016 *qt422016.Writer, name string) {
+	//line templates/base.qtpl:34
+	qw422016.N().S(`
+  <p>Hello, `)
+	//line templates/base.qtpl:35
+	qw422016.E().S(name)
+	//line templates/base.qtpl:35
+	qw422016.N().S(`!</p>
+`)
+//line templates/base.qtpl:36
+}
+
+//line templates/base.qtpl:36
+func WriteBody(qq422016 qtio422016.Writer, name string) {
+	//line templates/base.qtpl:36
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	//line templates/base.qtpl:36
+	StreamBody(qw422016, name)
+	//line templates/base.qtpl:36
+	qt422016.ReleaseWriter(qw422016)
+//line templates/base.qtpl:36
+}
+
+//line templates/base.qtpl:36
+func Body(name string) string {
+	//line templates/base.qtpl:36
+	qb422016 := qt422016.AcquireByteBuffer()
+	//line templates/base.qtpl:36
+	WriteBody(qb422016, name)
+	//line templates/base.qtpl:36
+	qs422016 := string(qb422016.B)
+	//line templates/base.qtpl:36
+	qt422016.ReleaseByteBuffer(qb422016)
+	//line templates/base.qtpl:36
+	return qs422016
+//line templates/base.qtpl:36
 }

@@ -34,7 +34,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 		log.Infof("Sending %d", i)
-		templates.WriteHello(writer, fmt.Sprint(i))
+		templates.WriteBody(writer, fmt.Sprint(i))
 		err = writer.Close()
 		if err != nil {
 			log.Fatal(err)
