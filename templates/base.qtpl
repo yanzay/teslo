@@ -1,0 +1,32 @@
+All the text outside function templates is treated as comments,
+i.e. it is just ignored by quicktemplate compiler (`qtc`). It is for humans.
+
+Hello is a simple template function.
+{% func Hello(name string) %}
+<html>
+<head>
+<title>Test title</title>
+<script>
+window.addEventListener("load", function(evt) {
+  var ws = new WebSocket("ws://localhost:8080/ws");
+  ws.onopen = function(e) {
+    document.write("OPEN");
+  };
+  ws.onclose = function(e) {
+    document.write("CLOSE");
+  };
+  ws.onmessage = function(e) {
+    document.write(e.data);
+  };
+  ws.onerror = function(e) {
+    document.write("Error: ", e.data);
+  };
+});
+</script>
+</head>
+<body>
+    <p>Hello, {%s name %}!</p>
+</body>
+</html>
+{% endfunc %}
+
