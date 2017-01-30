@@ -2,6 +2,7 @@ All the text outside function templates is treated as comments,
 i.e. it is just ignored by quicktemplate compiler (`qtc`). It is for humans.
 
 Hello is a simple template function.
+
 {% func Hello(name string) %}
 <html>
 <head>
@@ -10,22 +11,23 @@ Hello is a simple template function.
 window.addEventListener("load", function(evt) {
   var ws = new WebSocket("ws://localhost:8080/ws");
   ws.onopen = function(e) {
-    document.write("OPEN");
+    console.log("OPEN");
   };
   ws.onclose = function(e) {
-    document.write("CLOSE");
+    console.log("CLOSE");
   };
   ws.onmessage = function(e) {
-    var body = document.getElementsByTagName("body")[0];
-    body.innerHTML = e.data;
+    var message = JSON.parse(e.data);
+    var el = document.getElementById(message.id)
+    el.innerHTML = message.content;
   };
   ws.onerror = function(e) {
-    document.write("Error: ", e.data);
+    console.log("Error: ", e.data);
   };
 });
 </script>
 </head>
-<body>
+<body id="app">
     {%= Body(name) %}
 </body>
 </html>
@@ -34,4 +36,3 @@ window.addEventListener("load", function(evt) {
 {% func Body(name string) %}
   <p>Hello, {%s name %}!</p>
 {% endfunc %}
-

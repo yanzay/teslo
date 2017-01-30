@@ -15,16 +15,17 @@ import (
 // i.e. it is just ignored by quicktemplate compiler (`qtc`). It is for humans.
 //
 // Hello is a simple template function.
+//
 
-//line templates/base.qtpl:5
+//line templates/base.qtpl:6
 var (
 	_ = qtio422016.Copy
 	_ = qt422016.AcquireByteBuffer
 )
 
-//line templates/base.qtpl:5
+//line templates/base.qtpl:6
 func StreamHello(qw422016 *qt422016.Writer, name string) {
-	//line templates/base.qtpl:5
+	//line templates/base.qtpl:6
 	qw422016.N().S(`
 <html>
 <head>
@@ -33,94 +34,95 @@ func StreamHello(qw422016 *qt422016.Writer, name string) {
 window.addEventListener("load", function(evt) {
   var ws = new WebSocket("ws://localhost:8080/ws");
   ws.onopen = function(e) {
-    document.write("OPEN");
+    console.log("OPEN");
   };
   ws.onclose = function(e) {
-    document.write("CLOSE");
+    console.log("CLOSE");
   };
   ws.onmessage = function(e) {
-    var body = document.getElementsByTagName("body")[0];
-    body.innerHTML = e.data;
+    var message = JSON.parse(e.data);
+    var el = document.getElementById(message.id)
+    el.innerHTML = message.content;
   };
   ws.onerror = function(e) {
-    document.write("Error: ", e.data);
+    console.log("Error: ", e.data);
   };
 });
 </script>
 </head>
-<body>
+<body id="app">
     `)
-	//line templates/base.qtpl:29
+	//line templates/base.qtpl:31
 	StreamBody(qw422016, name)
-	//line templates/base.qtpl:29
+	//line templates/base.qtpl:31
 	qw422016.N().S(`
 </body>
 </html>
 `)
-//line templates/base.qtpl:32
-}
-
-//line templates/base.qtpl:32
-func WriteHello(qq422016 qtio422016.Writer, name string) {
-	//line templates/base.qtpl:32
-	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/base.qtpl:32
-	StreamHello(qw422016, name)
-	//line templates/base.qtpl:32
-	qt422016.ReleaseWriter(qw422016)
-//line templates/base.qtpl:32
-}
-
-//line templates/base.qtpl:32
-func Hello(name string) string {
-	//line templates/base.qtpl:32
-	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/base.qtpl:32
-	WriteHello(qb422016, name)
-	//line templates/base.qtpl:32
-	qs422016 := string(qb422016.B)
-	//line templates/base.qtpl:32
-	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/base.qtpl:32
-	return qs422016
-//line templates/base.qtpl:32
+//line templates/base.qtpl:34
 }
 
 //line templates/base.qtpl:34
-func StreamBody(qw422016 *qt422016.Writer, name string) {
+func WriteHello(qq422016 qtio422016.Writer, name string) {
 	//line templates/base.qtpl:34
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	//line templates/base.qtpl:34
+	StreamHello(qw422016, name)
+	//line templates/base.qtpl:34
+	qt422016.ReleaseWriter(qw422016)
+//line templates/base.qtpl:34
+}
+
+//line templates/base.qtpl:34
+func Hello(name string) string {
+	//line templates/base.qtpl:34
+	qb422016 := qt422016.AcquireByteBuffer()
+	//line templates/base.qtpl:34
+	WriteHello(qb422016, name)
+	//line templates/base.qtpl:34
+	qs422016 := string(qb422016.B)
+	//line templates/base.qtpl:34
+	qt422016.ReleaseByteBuffer(qb422016)
+	//line templates/base.qtpl:34
+	return qs422016
+//line templates/base.qtpl:34
+}
+
+//line templates/base.qtpl:36
+func StreamBody(qw422016 *qt422016.Writer, name string) {
+	//line templates/base.qtpl:36
 	qw422016.N().S(`
   <p>Hello, `)
-	//line templates/base.qtpl:35
+	//line templates/base.qtpl:37
 	qw422016.E().S(name)
-	//line templates/base.qtpl:35
+	//line templates/base.qtpl:37
 	qw422016.N().S(`!</p>
 `)
-//line templates/base.qtpl:36
+//line templates/base.qtpl:38
 }
 
-//line templates/base.qtpl:36
+//line templates/base.qtpl:38
 func WriteBody(qq422016 qtio422016.Writer, name string) {
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	StreamBody(qw422016, name)
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	qt422016.ReleaseWriter(qw422016)
-//line templates/base.qtpl:36
+//line templates/base.qtpl:38
 }
 
-//line templates/base.qtpl:36
+//line templates/base.qtpl:38
 func Body(name string) string {
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	WriteBody(qb422016, name)
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	qs422016 := string(qb422016.B)
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:38
 	return qs422016
-//line templates/base.qtpl:36
+//line templates/base.qtpl:38
 }

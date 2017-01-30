@@ -10,6 +10,11 @@ import (
 	"github.com/yanzay/teslo/templates"
 )
 
+type Message struct {
+	ID      string
+	Content string
+}
+
 var upgrader = websocket.Upgrader{}
 
 func main() {
@@ -34,7 +39,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 		log.Infof("Sending %d", i)
-		templates.WriteBody(writer, fmt.Sprint(i))
+		templates.WriteMessage(writer, "app", templates.Body(fmt.Sprint(i)))
 		err = writer.Close()
 		if err != nil {
 			log.Fatal(err)
