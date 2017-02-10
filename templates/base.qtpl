@@ -3,7 +3,14 @@ i.e. it is just ignored by quicktemplate compiler (`qtc`). It is for humans.
 
 Hello is a simple template function.
 
-{% func Hello(name string) %}
+{% code
+type Item struct {
+	ID      string
+	Content string
+}
+%}
+
+{% func Hello(items []Item) %}
 <html>
 <head>
 <title>Test title</title>
@@ -24,15 +31,30 @@ window.addEventListener("load", function(evt) {
   ws.onerror = function(e) {
     console.log("Error: ", e.data);
   };
+  var app = document.getElementById("app")
+
+  var clickHandler = function(e) {
+    console.log(e.target.id);
+    if (e.target.id) {
+      ws.send(JSON.stringify({event: "click", id: e.target.id}));
+    }
+  }
+  app.addEventListener("click", clickHandler)
 });
 </script>
 </head>
 <body id="app">
-    {%= Body(name) %}
+    {%= Todo(items) %}
 </body>
 </html>
 {% endfunc %}
 
 {% func Body(name string) %}
   <p>Hello, {%s name %}!</p>
+{% endfunc %}
+
+{% func Todo(items []Item) %}
+  {% for _, item := range items %}
+    <input type="checkbox" id="{%s item.ID %}">{%s item.Content %}</input>
+  {% endfor %}
 {% endfunc %}

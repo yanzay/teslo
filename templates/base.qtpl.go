@@ -23,9 +23,15 @@ var (
 	_ = qt422016.AcquireByteBuffer
 )
 
-//line templates/base.qtpl:6
-func StreamHello(qw422016 *qt422016.Writer, name string) {
-	//line templates/base.qtpl:6
+//line templates/base.qtpl:7
+type Item struct {
+	ID      string
+	Content string
+}
+
+//line templates/base.qtpl:13
+func StreamHello(qw422016 *qt422016.Writer, items []Item) {
+	//line templates/base.qtpl:13
 	qw422016.N().S(`
 <html>
 <head>
@@ -47,82 +53,144 @@ window.addEventListener("load", function(evt) {
   ws.onerror = function(e) {
     console.log("Error: ", e.data);
   };
+  var app = document.getElementById("app")
+
+  var clickHandler = function(e) {
+    console.log(e.target.id);
+    if (e.target.id) {
+      ws.send(JSON.stringify({event: "click", id: e.target.id}));
+    }
+  }
+  app.addEventListener("click", clickHandler)
 });
 </script>
 </head>
 <body id="app">
     `)
-	//line templates/base.qtpl:31
-	StreamBody(qw422016, name)
-	//line templates/base.qtpl:31
+	//line templates/base.qtpl:47
+	StreamTodo(qw422016, items)
+	//line templates/base.qtpl:47
 	qw422016.N().S(`
 </body>
 </html>
 `)
-//line templates/base.qtpl:34
+//line templates/base.qtpl:50
 }
 
-//line templates/base.qtpl:34
-func WriteHello(qq422016 qtio422016.Writer, name string) {
-	//line templates/base.qtpl:34
+//line templates/base.qtpl:50
+func WriteHello(qq422016 qtio422016.Writer, items []Item) {
+	//line templates/base.qtpl:50
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/base.qtpl:34
-	StreamHello(qw422016, name)
-	//line templates/base.qtpl:34
+	//line templates/base.qtpl:50
+	StreamHello(qw422016, items)
+	//line templates/base.qtpl:50
 	qt422016.ReleaseWriter(qw422016)
-//line templates/base.qtpl:34
+//line templates/base.qtpl:50
 }
 
-//line templates/base.qtpl:34
-func Hello(name string) string {
-	//line templates/base.qtpl:34
+//line templates/base.qtpl:50
+func Hello(items []Item) string {
+	//line templates/base.qtpl:50
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/base.qtpl:34
-	WriteHello(qb422016, name)
-	//line templates/base.qtpl:34
+	//line templates/base.qtpl:50
+	WriteHello(qb422016, items)
+	//line templates/base.qtpl:50
 	qs422016 := string(qb422016.B)
-	//line templates/base.qtpl:34
+	//line templates/base.qtpl:50
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/base.qtpl:34
+	//line templates/base.qtpl:50
 	return qs422016
-//line templates/base.qtpl:34
+//line templates/base.qtpl:50
 }
 
-//line templates/base.qtpl:36
+//line templates/base.qtpl:52
 func StreamBody(qw422016 *qt422016.Writer, name string) {
-	//line templates/base.qtpl:36
+	//line templates/base.qtpl:52
 	qw422016.N().S(`
   <p>Hello, `)
-	//line templates/base.qtpl:37
+	//line templates/base.qtpl:53
 	qw422016.E().S(name)
-	//line templates/base.qtpl:37
+	//line templates/base.qtpl:53
 	qw422016.N().S(`!</p>
 `)
-//line templates/base.qtpl:38
+//line templates/base.qtpl:54
 }
 
-//line templates/base.qtpl:38
+//line templates/base.qtpl:54
 func WriteBody(qq422016 qtio422016.Writer, name string) {
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	StreamBody(qw422016, name)
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	qt422016.ReleaseWriter(qw422016)
-//line templates/base.qtpl:38
+//line templates/base.qtpl:54
 }
 
-//line templates/base.qtpl:38
+//line templates/base.qtpl:54
 func Body(name string) string {
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	WriteBody(qb422016, name)
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	qs422016 := string(qb422016.B)
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/base.qtpl:38
+	//line templates/base.qtpl:54
 	return qs422016
-//line templates/base.qtpl:38
+//line templates/base.qtpl:54
+}
+
+//line templates/base.qtpl:56
+func StreamTodo(qw422016 *qt422016.Writer, items []Item) {
+	//line templates/base.qtpl:56
+	qw422016.N().S(`
+  `)
+	//line templates/base.qtpl:57
+	for _, item := range items {
+		//line templates/base.qtpl:57
+		qw422016.N().S(`
+    <input type="checkbox" id="`)
+		//line templates/base.qtpl:58
+		qw422016.E().S(item.ID)
+		//line templates/base.qtpl:58
+		qw422016.N().S(`">`)
+		//line templates/base.qtpl:58
+		qw422016.E().S(item.Content)
+		//line templates/base.qtpl:58
+		qw422016.N().S(`</input>
+  `)
+		//line templates/base.qtpl:59
+	}
+	//line templates/base.qtpl:59
+	qw422016.N().S(`
+`)
+//line templates/base.qtpl:60
+}
+
+//line templates/base.qtpl:60
+func WriteTodo(qq422016 qtio422016.Writer, items []Item) {
+	//line templates/base.qtpl:60
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	//line templates/base.qtpl:60
+	StreamTodo(qw422016, items)
+	//line templates/base.qtpl:60
+	qt422016.ReleaseWriter(qw422016)
+//line templates/base.qtpl:60
+}
+
+//line templates/base.qtpl:60
+func Todo(items []Item) string {
+	//line templates/base.qtpl:60
+	qb422016 := qt422016.AcquireByteBuffer()
+	//line templates/base.qtpl:60
+	WriteTodo(qb422016, items)
+	//line templates/base.qtpl:60
+	qs422016 := string(qb422016.B)
+	//line templates/base.qtpl:60
+	qt422016.ReleaseByteBuffer(qb422016)
+	//line templates/base.qtpl:60
+	return qs422016
+//line templates/base.qtpl:60
 }
