@@ -1,7 +1,6 @@
 package teslo
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/gorilla/websocket"
@@ -18,6 +17,7 @@ type Session struct {
 	requests  chan Event
 	responses chan Message
 	server    *Server
+	close     chan struct{}
 }
 
 func NewSession(server *Server, conn *websocket.Conn) *Session {
@@ -27,29 +27,34 @@ func NewSession(server *Server, conn *websocket.Conn) *Session {
 		conn:      conn,
 		requests:  make(chan Event, 0),
 		responses: make(chan Message, 0),
+		close:     make(chan struct{}, 0),
 	}
 }
 
 func (s *Session) Start() {
-	ctx, cancel := context.WithCancel(context.Background())
+	log.Debugf("Starting session: %s", s.ID)
 	defer s.server.CloseSession(s.ID)
-	go s.writeLoop(ctx, cancel)
-	go s.readLoop(ctx, cancel)
-	s.eventHandler(ctx, cancel)
-	cancel()
+	go s.writeLoop()
+	go s.readLoop()
+	s.eventHandler()
+}
+
+func (s *Session) Close() {
+	log.Debugf("Closing session: %s", s.ID)
+	close(s.close)
 }
 
 func (s *Session) Respond(id string, content string) {
 	s.responses <- Message{ID: id, Content: content}
 }
 
-func (s *Session) eventHandler(ctx context.Context, cancel context.CancelFunc) {
+func (s *Session) eventHandler() {
 	for {
 		select {
-		case <-ctx.Done():
+		case <-s.close:
+			log.Debugf("Exiting eventHandler for session: %s", s.ID)
 			return
-		default:
-			request := <-s.requests
+		case request := <-s.requests:
 			log.Debugf("Sending request: %v", request)
 			if s.server.handlers[request.ID] != nil {
 				s.server.handlers[request.ID](s, &request)
@@ -65,17 +70,17 @@ func (s *Session) eventHandler(ctx context.Context, cancel context.CancelFunc) {
 	}
 }
 
-func (s *Session) writeLoop(ctx context.Context, cancel context.CancelFunc) {
+func (s *Session) writeLoop() {
 	for {
 		select {
-		case <-ctx.Done():
+		case <-s.close:
+			log.Debugf("Exiting writeLoop for session: %s", s.ID)
 			return
-		default:
-			message := <-s.responses
+		case message := <-s.responses:
 			writer, err := s.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
 				log.Errorf("Can't get next writer for websocket: %s", err)
-				cancel()
+				s.Close()
 				return
 			}
 			log.Debugf("Sending response: %v", message)
@@ -83,7 +88,7 @@ func (s *Session) writeLoop(ctx context.Context, cancel context.CancelFunc) {
 			err = writer.Close()
 			if err != nil {
 				log.Errorf("Can't write to websocket: %s", err)
-				cancel()
+				s.Close()
 				return
 			}
 		}
@@ -96,16 +101,17 @@ type Event struct {
 	Parents []string `json:"parents"`
 }
 
-func (s *Session) readLoop(ctx context.Context, cancel context.CancelFunc) {
+func (s *Session) readLoop() {
 	for {
 		select {
-		case <-ctx.Done():
+		case <-s.close:
+			log.Debugf("Exiting readLoop for session: %s", s.ID)
 			return
 		default:
 			_, reader, err := s.conn.NextReader()
 			if err != nil {
 				log.Errorf("Can't get websocket reader: %s", err)
-				cancel()
+				s.Close()
 				return
 			}
 			decoder := json.NewDecoder(reader)

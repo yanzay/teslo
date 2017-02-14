@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/yanzay/log"
 	"github.com/yanzay/teslo"
 	"github.com/yanzay/teslo/cmd/templates"
 )
@@ -18,6 +19,7 @@ var defaultState = templates.State{
 var sessions = map[string]templates.State{}
 
 func main() {
+	log.Level = log.LevelTrace
 	server := teslo.NewServer()
 	server.Render = func(w io.Writer) {
 		templates.WritePage(w, defaultState)
@@ -32,6 +34,7 @@ func main() {
 		sessions[id] = templates.State{Items: items}
 	}
 	server.CloseSession = func(id string) {
+		fmt.Printf("Closing session with id: %s\n", id)
 		delete(sessions, id)
 	}
 	server.Subscribe("todo", TodoHandler)
