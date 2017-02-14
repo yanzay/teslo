@@ -13,10 +13,12 @@ var items = []*templates.Item{
 	{ID: "3", Content: "write a shop app"},
 }
 
+var state = templates.State{Items: items}
+
 func main() {
 	server := teslo.NewServer()
 	server.Render = func(w http.ResponseWriter) {
-		templates.WriteHello(w, items)
+		templates.WritePage(w, state)
 	}
 	server.Subscribe("todo", TodoHandler)
 	server.Start()

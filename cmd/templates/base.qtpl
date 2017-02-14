@@ -1,49 +1,25 @@
+{% import "github.com/yanzay/teslo/templates" %}
+
 {% code
 type Item struct {
 	ID      string
 	Content string
   Done    bool
 }
+
+type State struct {
+	Items []*Item
+}
 %}
 
-{% func Hello(items []*Item) %}
+{% func Page(state State) %}
 <html>
 <head>
 <title>Test title</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script>
-window.addEventListener("load", function(evt) {
-  var ws = new WebSocket("ws://localhost:8080/ws");
-  ws.onopen = function(e) {
-    console.log("OPEN");
-  };
-  ws.onclose = function(e) {
-    console.log("CLOSE");
-  };
-  ws.onmessage = function(e) {
-    var message = JSON.parse(e.data);
-    var el = document.getElementById(message.id)
-    el.outerHTML = message.content;
-  };
-  ws.onerror = function(e) {
-    console.log("Error: ", e.data);
-  };
-  var app = document.getElementById("app")
-
-  var clickHandler = function(e) {
-    console.log(e.target.id);
-    var parentIds = $(e.target).parents().map(function(i, el) {return el.id;}).toArray().filter(function(id) {return id !== ""});
-    console.log(parentIds);
-    if (e.target.id) {
-      ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds}));
-    }
-  }
-  app.addEventListener("click", clickHandler)
-});
-</script>
+{%= templates.JS() %}
 </head>
 <body id="app">
-    {%= Todo(items) %}
+    {%= Todo(state.Items) %}
 </body>
 </html>
 {% endfunc %}
