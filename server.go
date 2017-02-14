@@ -14,12 +14,16 @@ type Message struct {
 	Content string
 }
 
+type Responder interface {
+	Respond(string, string)
+}
+
 type Server struct {
 	Render    func(http.ResponseWriter)
 	Addr      string
 	requests  chan Event
 	responses chan Message
-	handlers  map[string]func(*Event)
+	handlers  map[string]func(Responder, *Event)
 }
 
 func NewServer() *Server {
@@ -27,7 +31,7 @@ func NewServer() *Server {
 		Addr:      ":8080",
 		requests:  make(chan Event, 0),
 		responses: make(chan Message, 0),
-		handlers:  make(map[string]func(*Event)),
+		handlers:  make(map[string]func(Responder, *Event)),
 	}
 }
 
@@ -44,11 +48,11 @@ func (s *Server) eventHandler() {
 		request := <-s.requests
 		log.Println(request)
 		if s.handlers[request.ID] != nil {
-			s.handlers[request.ID](&request)
+			s.handlers[request.ID](s, &request)
 		} else {
 			for _, parent := range request.Parents {
 				if s.handlers[parent] != nil {
-					s.handlers[parent](&request)
+					s.handlers[parent](s, &request)
 					break
 				}
 			}
@@ -60,7 +64,7 @@ func (s *Server) Respond(id string, content string) {
 	s.responses <- Message{ID: id, Content: content}
 }
 
-func (s *Server) Subscribe(id string, handler func(*Event)) {
+func (s *Server) Subscribe(id string, handler func(Responder, *Event)) {
 	s.handlers[id] = handler
 }
 
