@@ -27,7 +27,7 @@ window.addEventListener("load", function(evt) {
       ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds}));
     }
   }
-  app.addEventListener("click", clickHandler)
+  app.addEventListener("click", clickHandler);
 });
 </script>
 {% endfunc %}

@@ -20,6 +20,12 @@ type Session struct {
 	close     chan struct{}
 }
 
+type Event struct {
+	Type    string   `json:"event"`
+	ID      string   `json:"id"`
+	Parents []string `json:"parents"`
+}
+
 func NewSession(server *Server, conn *websocket.Conn) *Session {
 	return &Session{
 		ID:        uuid.NewV4().String(),
@@ -93,12 +99,6 @@ func (s *Session) writeLoop() {
 			}
 		}
 	}
-}
-
-type Event struct {
-	Type    string   `json:"event"`
-	ID      string   `json:"id"`
-	Parents []string `json:"parents"`
 }
 
 func (s *Session) readLoop() {
