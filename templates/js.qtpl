@@ -26,8 +26,18 @@ window.addEventListener("load", function(evt) {
     if (e.target.id) {
       ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds}));
     }
-  }
+  };
+  var submitHandler = function(e) {
+    e.preventDefault();
+    var form = $(e.target).serialize();
+    console.log(form);
+    form.event = "submit";
+    form.id = e.target.id;
+    console.log(form);
+    ws.send(JSON.stringify(form));
+  };
   app.addEventListener("click", clickHandler);
+  app.addEventListener("submit", submitHandler);
 });
 </script>
 {% endfunc %}

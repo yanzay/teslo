@@ -48,36 +48,46 @@ window.addEventListener("load", function(evt) {
     if (e.target.id) {
       ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds}));
     }
-  }
-  app.addEventListener("click", clickHandler)
+  };
+  var submitHandler = function(e) {
+    e.preventDefault();
+    var form = $(e.target).serialize();
+    console.log(form);
+    form.event = "submit";
+    form.id = e.target.id;
+    console.log(form);
+    ws.send(JSON.stringify(form));
+  };
+  app.addEventListener("click", clickHandler);
+  app.addEventListener("submit", submitHandler);
 });
 </script>
 `)
-//line templates/js.qtpl:33
+//line templates/js.qtpl:43
 }
 
-//line templates/js.qtpl:33
+//line templates/js.qtpl:43
 func WriteJS(qq422016 qtio422016.Writer) {
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	StreamJS(qw422016)
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	qt422016.ReleaseWriter(qw422016)
-//line templates/js.qtpl:33
+//line templates/js.qtpl:43
 }
 
-//line templates/js.qtpl:33
+//line templates/js.qtpl:43
 func JS() string {
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	WriteJS(qb422016)
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	qs422016 := string(qb422016.B)
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/js.qtpl:33
+	//line templates/js.qtpl:43
 	return qs422016
-//line templates/js.qtpl:33
+//line templates/js.qtpl:43
 }

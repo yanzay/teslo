@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/websocket"
-	uuid "github.com/satori/go.uuid"
 	"github.com/yanzay/log"
 	"github.com/yanzay/teslo/templates"
 )
@@ -26,9 +25,9 @@ type Event struct {
 	Parents []string `json:"parents"`
 }
 
-func NewSession(server *Server, conn *websocket.Conn) *Session {
+func NewSession(server *Server, conn *websocket.Conn, sessionID string) *Session {
 	return &Session{
-		ID:        uuid.NewV4().String(),
+		ID:        sessionID,
 		server:    server,
 		conn:      conn,
 		requests:  make(chan Event, 0),
