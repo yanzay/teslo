@@ -23,6 +23,7 @@ type Event struct {
 	Type    string   `json:"event"`
 	ID      string   `json:"id"`
 	Parents []string `json:"parents"`
+	Data    string   `json:"data"`
 }
 
 func NewSession(server *Server, conn *websocket.Conn, sessionID string) *Session {

@@ -1,43 +1,6 @@
 {% func JS() %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
-window.addEventListener("load", function(evt) {
-  var ws = new WebSocket("ws://localhost:8080/ws");
-  ws.onopen = function(e) {
-    console.log("OPEN");
-  };
-  ws.onclose = function(e) {
-    console.log("CLOSE");
-  };
-  ws.onmessage = function(e) {
-    var message = JSON.parse(e.data);
-    var el = document.getElementById(message.id)
-    el.outerHTML = message.content;
-  };
-  ws.onerror = function(e) {
-    console.log("Error: ", e.data);
-  };
-  var app = document.getElementById("app")
-
-  var clickHandler = function(e) {
-    console.log(e.target.id);
-    var parentIds = $(e.target).parents().map(function(i, el) {return el.id;}).toArray().filter(function(id) {return id !== ""});
-    console.log(parentIds);
-    if (e.target.id) {
-      ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds}));
-    }
-  };
-  var submitHandler = function(e) {
-    e.preventDefault();
-    var form = $(e.target).serialize();
-    console.log(form);
-    form.event = "submit";
-    form.id = e.target.id;
-    console.log(form);
-    ws.send(JSON.stringify(form));
-  };
-  app.addEventListener("click", clickHandler);
-  app.addEventListener("submit", submitHandler);
-});
+{% cat "./main.js" %}
 </script>
 {% endfunc %}

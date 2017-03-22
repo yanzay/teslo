@@ -23,7 +23,9 @@ func StreamJS(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
-window.addEventListener("load", function(evt) {
+`)
+	//line templates/js.qtpl:4
+	qw422016.N().S(`window.addEventListener("load", function(evt) {
   var ws = new WebSocket("ws://localhost:8080/ws");
   ws.onopen = function(e) {
     console.log("OPEN");
@@ -42,6 +44,7 @@ window.addEventListener("load", function(evt) {
   var app = document.getElementById("app")
 
   var clickHandler = function(e) {
+    console.log("Click handler");
     console.log(e.target.id);
     var parentIds = $(e.target).parents().map(function(i, el) {return el.id;}).toArray().filter(function(id) {return id !== ""});
     console.log(parentIds);
@@ -50,44 +53,53 @@ window.addEventListener("load", function(evt) {
     }
   };
   var submitHandler = function(e) {
+    console.log("Submit handler");
     e.preventDefault();
     var form = $(e.target).serialize();
+    console.log($(e.target));
     console.log(form);
-    form.event = "submit";
-    form.id = e.target.id;
-    console.log(form);
-    ws.send(JSON.stringify(form));
+    var resp = {
+      event: "submit",
+      id: e.target.id,
+      data: form,
+    };
+    console.log(resp);
+    ws.send(JSON.stringify(resp));
   };
   app.addEventListener("click", clickHandler);
   app.addEventListener("submit", submitHandler);
 });
+
+`)
+	//line templates/js.qtpl:4
+	qw422016.N().S(`
 </script>
 `)
-//line templates/js.qtpl:43
+//line templates/js.qtpl:6
 }
 
-//line templates/js.qtpl:43
+//line templates/js.qtpl:6
 func WriteJS(qq422016 qtio422016.Writer) {
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	StreamJS(qw422016)
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	qt422016.ReleaseWriter(qw422016)
-//line templates/js.qtpl:43
+//line templates/js.qtpl:6
 }
 
-//line templates/js.qtpl:43
+//line templates/js.qtpl:6
 func JS() string {
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	qb422016 := qt422016.AcquireByteBuffer()
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	WriteJS(qb422016)
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	qs422016 := string(qb422016.B)
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	qt422016.ReleaseByteBuffer(qb422016)
-	//line templates/js.qtpl:43
+	//line templates/js.qtpl:6
 	return qs422016
-//line templates/js.qtpl:43
+//line templates/js.qtpl:6
 }
