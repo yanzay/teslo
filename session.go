@@ -27,6 +27,7 @@ type Event struct {
 }
 
 func NewSession(server *Server, conn *websocket.Conn, sessionID string) *Session {
+	log.Debugf("Creating new session %v", conn)
 	return &Session{
 		ID:        sessionID,
 		server:    server,
@@ -41,8 +42,7 @@ func (s *Session) Start() {
 	log.Debugf("Starting session: %s", s.ID)
 	defer s.server.CloseSession(s.ID)
 	go s.writeLoop()
-	go s.readLoop()
-	s.eventHandler()
+	s.readLoop()
 }
 
 func (s *Session) Close() {
@@ -54,29 +54,24 @@ func (s *Session) Respond(id string, content string) {
 	s.responses <- Message{ID: id, Content: content}
 }
 
-func (s *Session) eventHandler() {
-	for {
-		select {
-		case <-s.close:
-			log.Debugf("Exiting eventHandler for session: %s", s.ID)
-			return
-		case request := <-s.requests:
-			log.Debugf("Sending request: %v", request)
-			if s.server.handlers[request.ID] != nil {
-				s.server.handlers[request.ID](s, &request)
-			} else {
-				for _, parent := range request.Parents {
-					if s.server.handlers[parent] != nil {
-						s.server.handlers[parent](s, &request)
-						break
-					}
-				}
+func (s *Session) handleRequest(request *Event) {
+	log.Debugf("Handling request: %v", request)
+	if s.server.handlers[request.ID] != nil {
+		log.Debug("Running handler")
+		s.server.handlers[request.ID](s, request)
+		log.Debug("Handler exited")
+	} else {
+		for _, parent := range request.Parents {
+			if s.server.handlers[parent] != nil {
+				s.server.handlers[parent](s, request)
+				return
 			}
 		}
 	}
 }
 
 func (s *Session) writeLoop() {
+	log.Debug("Starting writeLoop")
 	for {
 		select {
 		case <-s.close:
@@ -102,22 +97,23 @@ func (s *Session) writeLoop() {
 }
 
 func (s *Session) readLoop() {
+	defer log.Debug("exiting readLoop")
+	log.Debug("Starting readLoop")
 	for {
-		select {
-		case <-s.close:
-			log.Debugf("Exiting readLoop for session: %s", s.ID)
+		log.Debug("Getting next reader")
+		_, reader, err := s.conn.NextReader()
+		log.Debugf("reader ready, error: %s", err)
+		if err != nil {
+			log.Errorf("Can't get websocket reader: %s", err)
+			log.Debug("Closing session")
+			s.Close()
+			log.Debug("Session closed")
 			return
-		default:
-			_, reader, err := s.conn.NextReader()
-			if err != nil {
-				log.Errorf("Can't get websocket reader: %s", err)
-				s.Close()
-				return
-			}
-			decoder := json.NewDecoder(reader)
-			e := Event{}
-			decoder.Decode(&e)
-			s.requests <- e
 		}
+		decoder := json.NewDecoder(reader)
+		e := &Event{}
+		decoder.Decode(e)
+		s.handleRequest(e)
+		log.Debug("request handled")
 	}
 }
