@@ -39,7 +39,23 @@ window.addEventListener("load", function(evt) {
     console.log(resp);
     ws.send(JSON.stringify(resp));
   };
+  var changeHandler = function(e) {
+    console.log("Change handler");
+    console.log(e.target);
+    console.log($(e.target));
+    console.log($(e.target).data());
+    console.log(e.target.checked);
+    if (e.target.checked !== undefined) {
+      var resp = {
+        event: "change",
+        data: $(e.target).data(),
+        checked: e.target.checked
+      };
+      ws.send(JSON.stringify(resp));
+    }
+  };
   app.addEventListener("click", clickHandler);
   app.addEventListener("submit", submitHandler);
+  app.addEventListener("change", changeHandler);
 });
 
