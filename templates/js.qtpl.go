@@ -41,15 +41,18 @@ func StreamJS(qw422016 *qt422016.Writer) {
   ws.onerror = function(e) {
     console.log("Error: ", e.data);
   };
-  var app = document.getElementById("app")
+  var app = document.getElementById("app");
+
+  var parentIds = function(el) {
+    return $(el).parents().map(function(i, el) {return el.id;}).toArray().filter(function(id) {return id !== ""});
+  };
 
   var clickHandler = function(e) {
     console.log("Click handler");
     console.log(e.target.id);
-    var parentIds = $(e.target).parents().map(function(i, el) {return el.id;}).toArray().filter(function(id) {return id !== ""});
     console.log(parentIds);
     if (e.target.id) {
-      ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds}));
+      ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds(e.target)}));
     }
   };
   var submitHandler = function(e) {
@@ -73,10 +76,12 @@ func StreamJS(qw422016 *qt422016.Writer) {
     console.log($(e.target).data());
     console.log(e.target.checked);
     if (e.target.checked !== undefined) {
+      var data = $(e.target).data();
+      data.checked = e.target.checked;
       var resp = {
         event: "change",
-        data: $(e.target).data(),
-        checked: e.target.checked
+        parents: parentIds(e.target),
+        data: JSON.stringify($(e.target).data())
       };
       ws.send(JSON.stringify(resp));
     }
