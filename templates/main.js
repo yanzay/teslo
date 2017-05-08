@@ -23,7 +23,7 @@ window.addEventListener("load", function(evt) {
   var clickHandler = function(e) {
     console.log("Click handler");
     console.log(e.target.id);
-    console.log(parentIds);
+    console.log(parentIds());
     if (e.target.id) {
       ws.send(JSON.stringify({event: "click", id: e.target.id, parents: parentIds(e.target)}));
     }
